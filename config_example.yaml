@@ -1,0 +1,59 @@
+# Configuration file for Automated Knowledge Graph Generator
+# Copy this to config.yaml and modify as needed
+
+# OpenAI Configuration
+openai:
+  api_key: "${OPENAI_API_KEY}"  # Set via environment variable
+  model: "gpt-4o-2024-08-06"
+  max_tokens: 4000
+  temperature: 0.1
+  batch_processing:
+    max_requests_per_batch: 50000
+    poll_interval_seconds: 60
+
+# RDF Configuration
+rdf:
+  base_namespace: "http://example.org/kg/"
+  output_format: "turtle"  # turtle, xml, n3, json-ld
+  include_provenance: true
+  include_confidence_scores: true
+
+# Processing Configuration
+processing:
+  chunk_size: 3000
+  chunk_overlap: 200
+  max_file_size_mb: 50
+  supported_encodings: ["utf-8", "latin-1", "cp1252"]
+
+# Entity Recognition
+entities:
+  confidence_threshold: 0.5
+  entity_types:
+    - Person
+    - Organization
+    - Location
+    - Concept
+    - Event
+    - Product
+
+# Ontology Mapping
+ontologies:
+  use_standard_vocabularies: true
+  vocabularies:
+    - foaf
+    - schema.org
+    - dbpedia
+    - dcterms
+  custom_mappings: {}
+
+# Output Configuration
+output:
+  include_statistics: true
+  generate_summary_report: true
+  export_formats: ["turtle", "json-ld"]
+
+# Logging
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "kg_generator.log"

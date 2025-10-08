@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+"""
+Usage Example for Automated Knowledge Graph Generator
+===================================================
+
+This script demonstrates how to use the automated KG generator
+with various file types and configurations.
+"""
+
+import os
+import json
+from pathlib import Path
+from automated_kg_generator import AutomatedKGGenerator, FileTypeDetector
+
+def create_sample_data():
+    """Create sample data files for demonstration"""
+    # Create sample directory
+    sample_dir = Path("sample_data")
+    sample_dir.mkdir(exist_ok=True)
+
+    # Sample CSV data
+    csv_data = """name,position,company,location,email
+John Smith,Software Engineer,TechCorp,San Francisco,john@techcorp.com
+Jane Doe,Data Scientist,DataLab,New York,jane@datalab.com
+Bob Wilson,Product Manager,StartupX,Austin,bob@startupx.com
+Alice Brown,UX Designer,DesignCo,Seattle,alice@designco.com"""
+
+    with open(sample_dir / "employees.csv", "w") as f:
+        f.write(csv_data)
+
+    # Sample JSON data
+    json_data = {
+        "companies": [
+            {
+                "name": "TechCorp",
+                "founded": 2010,
+                "industry": "Technology",
+                "headquarters": "San Francisco",
+                "employees": 500,
+                "products": ["CloudPlatform", "DataAnalytics"]
+            },
+            {
+                "name": "DataLab",
+                "founded": 2015,
+                "industry": "Data Science",
+                "headquarters": "New York", 
+                "employees": 150,
+                "products": ["MLPlatform", "DataViz"]
+            }
+        ],
+        "partnerships": [
+            {
+                "company1": "TechCorp",
+                "company2": "DataLab",
+                "type": "Technology Partnership",
+                "start_date": "2020-01-15"
+            }
+        ]
+    }
+
+    with open(sample_dir / "companies.json", "w") as f:
+        json.dump(json_data, f, indent=2)
+
+    # Sample text data
+    text_data = """
+    TechCorp announced a strategic partnership with DataLab in January 2020. 
+    The collaboration focuses on developing advanced machine learning solutions 
+    for enterprise customers. John Smith, lead engineer at TechCorp, stated that 
+    this partnership will accelerate innovation in cloud-based analytics.
+
+    DataLab's CEO mentioned that their MLPlatform technology complements TechCorp's 
+    CloudPlatform infrastructure perfectly. The partnership has already resulted 
+    in three successful joint product launches.
+
+    Both companies are headquartered in major tech hubs - TechCorp in San Francisco 
+    and DataLab in New York - which facilitates collaboration between their 
+    engineering teams.
+    """
+
+    with open(sample_dir / "news_article.txt", "w") as f:
+        f.write(text_data.strip())
+
+    return str(sample_dir)
+
+def demonstrate_file_detection():
+    """Demonstrate automatic file type detection"""
+    print("=== File Type Detection Demo ===")
+
+    sample_dir = create_sample_data()
+
+    for file_path in Path(sample_dir).rglob("*"):
+        if file_path.is_file():
+            file_type = FileTypeDetector.detect_file_type(str(file_path))
+            print(f"{file_path.name}: {file_type}")
+
+            if file_type == "csv":
+                schema = FileTypeDetector.infer_csv_schema(str(file_path))
+                print(f"  Columns: {schema.get('columns', [])}")
+                print(f"  Rows: {schema.get('row_count', 0)}")
+            elif file_type == "json":
+                schema = FileTypeDetector.infer_json_schema(str(file_path))
+                print(f"  Structure: {json.dumps(schema.get('structure', {}), indent=4)[:200]}...")
+
+def demonstrate_basic_usage():
+    """Demonstrate basic usage with sample data"""
+    print("\n=== Basic Usage Demo ===")
+
+    # Check for API key
+    api_key = os.getenv('OPENAI_API_KEY')
+    if not api_key:
+        print("OPENAI_API_KEY environment variable not set. Using placeholder for demo.")
+        print("To run actual processing, set your OpenAI API key.")
+        return
+
+    # Create sample data
+    sample_dir = create_sample_data()
+
+    try:
+        # Initialize generator
+        generator = AutomatedKGGenerator(
+            openai_api_key=api_key,
+            base_namespace="http://example.org/demo/"
+        )
+
+        # Generate knowledge graph
+        print(f"Processing files in {sample_dir}...")
+        result = generator.generate_knowledge_graph(
+            input_directory=sample_dir,
+            output_file="demo_knowledge_graph.ttl"
+        )
+
+        print("\n=== Generation Results ===")
+        for key, value in result.items():
+            print(f"{key}: {value}")
+
+        # Display sample RDF output
+        if os.path.exists("demo_knowledge_graph.ttl"):
+            print("\n=== Sample RDF Output ===")
+            with open("demo_knowledge_graph.ttl", "r") as f:
+                content = f.read()
+                print(content[:1000] + "..." if len(content) > 1000 else content)
+
+    except Exception as e:
+        print(f"Error during processing: {e}")
+        print("This is expected if OPENAI_API_KEY is not set or invalid.")
+
+def demonstrate_batch_processing():
+    """Demonstrate batch processing concepts"""
+    print("\n=== Batch Processing Concepts ===")
+
+    print("Batch API Benefits:")
+    print("- 50% cost reduction compared to real-time API")
+    print("- Higher rate limits (separate pool)")
+    print("- 24-hour completion guarantee")
+    print("- Up to 50,000 requests per batch")
+    print("- 200MB maximum batch file size")
+
+    print("\nProcessing Flow:")
+    print("1. Detect file types and infer schemas")
+    print("2. Split large files into processing chunks")
+    print("3. Create structured extraction prompts")
+    print("4. Submit batch job to OpenAI")
+    print("5. Poll for completion (typically < 24 hours)")
+    print("6. Download and parse results")
+    print("7. Generate RDF triples from extractions")
+    print("8. Export to Turtle format")
+
+def main():
+    """Main demonstration function"""
+    print("Automated Knowledge Graph Generator - Usage Examples")
+    print("=" * 60)
+
+    # Demonstrate file detection
+    demonstrate_file_detection()
+
+    # Demonstrate batch processing concepts
+    demonstrate_batch_processing()
+
+    # Demonstrate basic usage (requires API key)
+    demonstrate_basic_usage()
+
+    print("\n=== Next Steps ===")
+    print("1. Set OPENAI_API_KEY environment variable")
+    print("2. Install dependencies: pip install -r requirements.txt")
+    print("3. Run: python automated_kg_generator.py --input-dir /path/to/files")
+    print("4. Check output: cat knowledge_graph.ttl")
+
+if __name__ == "__main__":
+    main()

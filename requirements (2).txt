@@ -1,0 +1,35 @@
+# Automated Knowledge Graph Generator Requirements
+# Core dependencies for LLM-based RDF generation
+
+# OpenAI and LLM dependencies
+openai>=1.0.0
+pydantic>=2.0.0
+
+# RDF and Knowledge Graph libraries
+rdflib>=7.0.0
+
+# LangChain ecosystem
+langchain>=0.1.0
+langchain-community>=0.0.10
+langchain-openai>=0.0.5
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# File processing and utilities
+pathlib2>=2.3.7
+python-magic>=0.4.27  # For better file type detection
+chardet>=5.0.0        # For encoding detection
+
+# Development and testing
+pytest>=7.0.0
+black>=23.0.0
+isort>=5.12.0
+mypy>=1.0.0
+
+# Optional: For enhanced functionality
+spacy>=3.7.0          # For additional NLP capabilities
+networkx>=3.0.0       # For graph analysis
+matplotlib>=3.7.0     # For visualization
+jupyter>=1.0.0        # For development notebooks
